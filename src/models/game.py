@@ -1,6 +1,5 @@
 from typing import List, Optional
 import random
-from .card import Suit
 from .deck import Deck
 from .player import Player
 from .bidding import Bidding
@@ -34,10 +33,7 @@ class Game:
             print("All players passed. Game over.")
             return
 
-        print(
-            f"\nFinal Contract: {self.contract} "
-            f"by {self.declarer.name}"
-        )
+        print(f"\nFinal Contract: {self.contract} " f"by {self.declarer.name}")
 
         # Playing phase
         self._play_tricks()

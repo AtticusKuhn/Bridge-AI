@@ -8,10 +8,8 @@ class Bidding:
     def __init__(self, players: List[Player], dealer_index: int):
         self.players = players
         self.dealer_index = dealer_index
-        self.current_player_index = dealer_index # dealer starts bidding
-        self.bids: Dict[Player, Optional[Bid]] = {
-            player: None for player in players
-        }
+        self.current_player_index = dealer_index  # dealer starts bidding
+        self.bids: Dict[Player, Optional[Bid]] = {player: None for player in players}
         self.passes = 0
         self.highest_bid = Bid(0)  # Pass bid
         self.highest_bidder: Optional[Player] = None
@@ -34,8 +32,10 @@ class Bidding:
         for number in range(max(1, current_highest), 8):
             for suit in Suit:
                 if number > current_highest or (
-                    number == current_highest and (
-                        not self.highest_bid.suit or Compare_Suits(self.highest_bid.suit, suit)
+                    number == current_highest
+                    and (
+                        not self.highest_bid.suit
+                        or Compare_Suits(self.highest_bid.suit, suit)
                     )
                 ):
                     valid_bids.append(Bid(number, suit))
@@ -58,12 +58,13 @@ class Bidding:
         # Update highest bid if not a pass
         if not bid.is_pass and bid > self.highest_bid:
             # rule to determine declarer/dummy
-            if self.current_declarer == -1 or (
-                bid.suit != self.highest_bid.suit) or (
-                (self.current_declarer + current_player) % 2 != 0
-                ):
+            if (
+                self.current_declarer == -1
+                or (bid.suit != self.highest_bid.suit)
+                or ((self.current_declarer + current_player) % 2 != 0)
+            ):
                 self.current_declarer = current_player
-            
+
             self.highest_bid = bid
             self.highest_bidder = current_player
             self.passes = 0

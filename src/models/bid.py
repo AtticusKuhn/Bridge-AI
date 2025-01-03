@@ -11,33 +11,35 @@ class Bid:
     def is_pass(self) -> bool:
         return self.number == 0
 
-    def __eq__(self, other: 'Bid') -> bool:
+    def __eq__(self, other: "Bid") -> bool:
         if not isinstance(other, Bid):
             return NotImplemented
         return self.number == other.number and self.suit == other.suit
 
-    def __lt__(self, other: 'Bid') -> bool:
+    def __lt__(self, other: "Bid") -> bool:
         if not isinstance(other, Bid):
             return NotImplemented
         if self.is_pass:
             return True
         if other.is_pass:
             return False
-        
+
         if self.number != other.number:
             return self.number < other.number
-        
-        return Compare_Suits(self.suit, other.suit)  # Equal number and both have suits, suit order
 
-    def __le__(self, other: 'Bid') -> bool:
+        return Compare_Suits(
+            self.suit, other.suit
+        )  # Equal number and both have suits, suit order
+
+    def __le__(self, other: "Bid") -> bool:
         return self < other or self == other
 
-    def __gt__(self, other: 'Bid') -> bool:
+    def __gt__(self, other: "Bid") -> bool:
         if not isinstance(other, Bid):
             return NotImplemented
         return not (self <= other)
 
-    def __ge__(self, other: 'Bid') -> bool:
+    def __ge__(self, other: "Bid") -> bool:
         return not (self < other)
 
     def __str__(self) -> str:

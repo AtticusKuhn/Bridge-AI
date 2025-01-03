@@ -10,7 +10,9 @@ class Deck:
 
     def _create_deck(self):
         """Creates a standard 52-card deck."""
-        self.cards = [Card(suit, rank) for suit in Suit if suit != Suit.NO_TRUMP for rank in Rank]
+        self.cards = [
+            Card(suit, rank) for suit in Suit if suit != Suit.NO_TRUMP for rank in Rank
+        ]
 
     def shuffle(self):
         """Shuffles the deck of cards."""
