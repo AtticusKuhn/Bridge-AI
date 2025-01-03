@@ -1,6 +1,6 @@
-from src.models.game import Game
-from src.agents.human_agent import HumanAgent
-from src.agents.random_agent import RandomAgent
+from models.game import Game
+from agents.human_agent import HumanAgent
+from agents.random_agent import RandomAgent
 
 
 def main():
