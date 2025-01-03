@@ -23,13 +23,10 @@ class Bid:
             return True
         if other.is_pass:
             return False
+        
         if self.number != other.number:
             return self.number < other.number
-        # No trump is higher than any suit
-        if self.suit is None:
-            return False
-        if other.suit is None:
-            return True
+        
         return self.suit < other.suit  # Equal number and both have suits, suit order
 
     def __le__(self, other: 'Bid') -> bool:
@@ -46,5 +43,5 @@ class Bid:
     def __str__(self) -> str:
         if self.is_pass:
             return "Pass"
-        suit_str = self.suit.value if self.suit else "NT"
+        suit_str = self.suit.value if self.suit else ""
         return f"{self.number} {suit_str}"
