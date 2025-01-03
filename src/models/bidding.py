@@ -38,7 +38,7 @@ class Bidding:
             # Suits
             for suit in Suit:
                 if number > current_highest or (
-                    number == current_highest and self.highest_bid.suit < suit
+                    number == current_highest and self.highest_bid.suit is not None
                 ):
                     valid_bids.append(Bid(number, suit))
 
