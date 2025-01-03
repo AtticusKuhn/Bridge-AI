@@ -10,7 +10,7 @@ class Deck:
 
     def _create_deck(self):
         """Creates a standard 52-card deck."""
-        self.cards = [Card(suit, rank) for suit in Suit for rank in Rank]
+        self.cards = [Card(suit, rank) for suit in Suit[:3] for rank in Rank]
 
     def shuffle(self):
         """Shuffles the deck of cards."""
