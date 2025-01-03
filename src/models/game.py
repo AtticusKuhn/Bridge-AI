@@ -3,7 +3,8 @@ import random
 from .card import Suit
 from .deck import Deck
 from .player import Player
-from .bidding import Bidding, Bid
+from .bidding import Bidding
+from .bid import Bid
 from .trick import Trick
 
 

@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 from .card import Card, Suit
-from .bidding import Bid
+from .bid import Bid
 
 
 class Player(ABC):
