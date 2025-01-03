@@ -1,9 +1,9 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional
 import random
 from .card import Suit
 from .deck import Deck
 from .player import Player
-from .bidding import Bidding
+from .bidding import Bidding, Bid
 from .trick import Trick
 
 
@@ -16,7 +16,7 @@ class Game:
         self.current_trick: Optional[Trick] = None
         self.tricks_played = []
         self.declarer: Optional[Player] = None
-        self.contract: Optional[Tuple[int, Optional[Suit]]] = None
+        self.contract: Optional[Bid] = None
         self.score = {player: 0 for player in players}
 
     def play(self):
@@ -34,8 +34,7 @@ class Game:
             return
 
         print(
-            f"\nFinal Contract: {self.contract[0]} "
-            f"{self.contract[1].value if self.contract[1] else 'NT'} "
+            f"\nFinal Contract: {self.contract} "
             f"by {self.declarer.name}"
         )
 
@@ -81,7 +80,7 @@ class Game:
 
         # Start with player to the left of declarer
         current_player_index = (self.players.index(self.declarer) + 1) % 4
-        trump_suit = self.contract[1]
+        trump_suit = self.contract.suit
 
         # Play 13 tricks
         for _ in range(13):
@@ -124,7 +123,7 @@ class Game:
         )
 
         # Calculate if contract was made
-        tricks_needed = 6 + self.contract[0]
+        tricks_needed = 6 + self.contract.number
         contract_made = declarer_team_tricks >= tricks_needed
 
         print(f"\nDeclarer's team took {declarer_team_tricks} tricks")

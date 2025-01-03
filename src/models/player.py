@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from .card import Card, Suit
+from .bidding import Bid
 
 
 class Player(ABC):
@@ -30,17 +31,15 @@ class Player(ABC):
         return card
 
     @abstractmethod
-    def make_bid(
-        self, valid_bids: List[Tuple[int, Optional[Suit]]]
-    ) -> Tuple[int, Optional[Suit]]:
+    def make_bid(self, valid_bids: List[Bid]) -> Bid:
         """
         Make a bid during the bidding phase.
 
         Args:
-            valid_bids: List of valid bid options as (number, suit) tuples
+            valid_bids: List of valid bid options
 
         Returns:
-            Chosen bid as (number, suit) tuple
+            Chosen bid
         """
         pass
 

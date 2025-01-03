@@ -1,20 +1,18 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from src.models.player import Player
 from src.models.card import Card, Suit
+from src.models.bidding import Bid
 
 
 class HumanAgent(Player):
-    def make_bid(
-        self, valid_bids: List[Tuple[int, Optional[Suit]]]
-    ) -> Tuple[int, Optional[Suit]]:
+    def make_bid(self, valid_bids: List[Bid]) -> Bid:
         """
         Ask the human player to make a bid.
         """
         print(f"\n{self.name}'s hand: {self.hand}")
         print("\nValid bids:")
-        for i, (number, suit) in enumerate(valid_bids):
-            suit_str = suit.value if suit else "No Trump"
-            print(f"{i}: {number} {suit_str}")
+        for i, bid in enumerate(valid_bids):
+            print(f"{i}: {bid}")
 
         while True:
             try:

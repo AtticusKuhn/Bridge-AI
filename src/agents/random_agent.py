@@ -1,13 +1,12 @@
 import random
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from src.models.player import Player
 from src.models.card import Card, Suit
+from src.models.bidding import Bid
 
 
 class RandomAgent(Player):
-    def make_bid(
-        self, valid_bids: List[Tuple[int, Optional[Suit]]]
-    ) -> Tuple[int, Optional[Suit]]:
+    def make_bid(self, valid_bids: List[Bid]) -> Bid:
         """
         Make a random valid bid.
         """
