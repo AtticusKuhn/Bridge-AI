@@ -27,7 +27,7 @@ class Player(ABC):
         )
 
     def get_suit_distribution(self):
-        return {s: len(list(filter(lambda card : card.suit == s, self.cards)))
+        return {s: len(list(filter(lambda card : card.suit == s, self.hand)))
                  for s in Suit if s != Suit.NO_TRUMP}
 
     def receive_cards(self, cards: List[Card]):
