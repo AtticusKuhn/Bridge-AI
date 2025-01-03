@@ -79,7 +79,7 @@ class Trick:
             True if the card beats the current winner
         """
         # Trump suit beats any non-trump suit
-        if self.trump_suit:
+        if self.trump_suit != Suit.NO_TRUMP:
             if card.suit == self.trump_suit and current_winner.suit != self.trump_suit:
                 return True
             if card.suit != self.trump_suit and current_winner.suit == self.trump_suit:
