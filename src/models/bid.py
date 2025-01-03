@@ -30,7 +30,7 @@ class Bid:
             return False
         if other.suit is None:
             return True
-        return False  # Equal number and both have suits, not less than
+        return self.suit < other.suit  # Equal number and both have suits, suit order
 
     def __le__(self, other: 'Bid') -> bool:
         return self < other or self == other
