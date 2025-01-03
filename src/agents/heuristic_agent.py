@@ -49,17 +49,10 @@ class HeuristicAgent(Player):
     def evaluate_hand(self) -> HandEvaluation:
         """Evaluate the hand using standard bridge point count system."""
         # Calculate high card points
-        hcp = sum(
-            self.HIGH_CARD_POINTS[card.rank]
-            for card in self.hand
-            if card.rank in self.HIGH_CARD_POINTS
-        )
+        hcp = self.get_hcp()
 
         # Count cards in each suit
-        suit_counts = {suit: 0 for suit in Suit if suit != Suit.NO_TRUMP}
-        for card in self.hand:
-            if card.suit != Suit.NO_TRUMP:
-                suit_counts[card.suit] += 1
+        suit_counts = self.get_suit_distribution()
 
         # Calculate distribution points
         distribution_points = self._calculate_distribution_points(suit_counts)
