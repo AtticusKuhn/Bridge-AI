@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict, Tuple
+from typing import List, Optional, Dict
 from models.player import Player
 from models.card import Card, Suit, Rank
 from models.bid import Bid
@@ -8,6 +8,7 @@ from dataclasses import dataclass
 @dataclass
 class HandEvaluation:
     """Represents the evaluation of a bridge hand."""
+
     high_card_points: int
     distribution_points: int
     suit_counts: Dict[Suit, int]
@@ -116,7 +117,7 @@ class HeuristicAgent(Player):
     def make_bid(self, valid_bids: List[Bid]) -> Bid:
         """Make a bid based on hand evaluation and basic bidding rules."""
         hand_eval = self.evaluate_hand()
-        
+
         # Pass with weak hands
         if hand_eval.total_points < self.MIN_POINTS_TO_BID:
             return self._get_pass_bid(valid_bids)
@@ -126,7 +127,10 @@ class HeuristicAgent(Player):
             return self._get_pass_bid(valid_bids)
 
         # Choose between NT and suit bid
-        if hand_eval.is_balanced and hand_eval.high_card_points >= self.MIN_POINTS_FOR_NT:
+        if (
+            hand_eval.is_balanced
+            and hand_eval.high_card_points >= self.MIN_POINTS_FOR_NT
+        ):
             desired_bid = Bid(bid_level, Suit.NO_TRUMP)
         else:
             desired_bid = Bid(bid_level, self._find_best_suit())
@@ -154,7 +158,7 @@ class HeuristicAgent(Player):
         suit_counts = self._get_suit_counts()
         longest_suit = max(suit_counts.items(), key=lambda x: x[1])[0]
         suit_cards = [c for c in valid_cards if c.suit == longest_suit]
-        
+
         if not suit_cards:
             return max(valid_cards, key=lambda c: c.rank.value)
 
@@ -162,7 +166,7 @@ class HeuristicAgent(Player):
         if len(suit_cards) >= 4:
             suit_cards.sort(key=lambda c: c.rank.value)
             return suit_cards[-4]
-        
+
         return max(suit_cards, key=lambda c: c.rank.value)
 
     def _choose_follow_card(self, valid_cards: List[Card], trick_suit: Suit) -> Card:
@@ -175,7 +179,7 @@ class HeuristicAgent(Player):
         high_card = max(trick_cards, key=lambda c: c.rank.value)
         if high_card.rank in [Rank.ACE, Rank.KING]:
             return high_card
-            
+
         return min(trick_cards, key=lambda c: c.rank.value)
 
     def choose_card(
@@ -187,5 +191,5 @@ class HeuristicAgent(Player):
 
         if not trick_suit:
             return self._choose_lead_card(valid_cards)
-        
+
         return self._choose_follow_card(valid_cards, trick_suit)
