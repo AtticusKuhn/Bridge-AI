@@ -62,7 +62,6 @@ class Game:
         while True:
             current_player = self.players[bidding.current_player_index]
             valid_bids = bidding.get_valid_bids()
-
             # Get bid from current player
             bid = current_player.make_bid(valid_bids)
             bidding_complete = bidding.make_bid(bid)

@@ -7,6 +7,18 @@ class Suit(Enum):
     HEARTS = "♥"
     SPADES = "♠"
     NO_TRUMP = "NT"
+    
+SUIT_RANK = {
+    Suit.CLUBS: 0,
+    Suit.DIAMONDS: 1,
+    Suit.HEARTS: 2,
+    Suit.SPADES: 3,
+    Suit.NO_TRUMP: 4
+}
+
+# Compares two suits
+def Compare_Suits(a: Suit, b: Suit):
+    return SUIT_RANK[a] < SUIT_RANK[b]
 
 
 class Rank(Enum):

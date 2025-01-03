@@ -1,5 +1,5 @@
 from typing import Optional
-from .card import Suit
+from .card import Suit, Compare_Suits
 
 
 class Bid:
@@ -27,7 +27,7 @@ class Bid:
         if self.number != other.number:
             return self.number < other.number
         
-        return self.suit < other.suit  # Equal number and both have suits, suit order
+        return Compare_Suits(self.suit, other.suit)  # Equal number and both have suits, suit order
 
     def __le__(self, other: 'Bid') -> bool:
         return self < other or self == other

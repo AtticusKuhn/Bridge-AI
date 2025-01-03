@@ -1,5 +1,5 @@
 from typing import List, Optional, Dict, Tuple
-from .card import Suit
+from .card import Suit, Compare_Suits
 from .player import Player
 from .bid import Bid
 
@@ -8,9 +8,7 @@ class Bidding:
     def __init__(self, players: List[Player], dealer_index: int):
         self.players = players
         self.dealer_index = dealer_index
-        self.current_player_index = (
-            dealer_index + 1
-        ) % 4  # Bidding starts left of dealer
+        self.current_player_index = dealer_index # dealer starts bidding
         self.bids: Dict[Player, Optional[Bid]] = {
             player: None for player in players
         }
@@ -33,13 +31,12 @@ class Bidding:
         valid_bids.append(Bid(0))  # Pass bid
 
         # Generate valid bids
-        for number in range(max(1, current_highest + 1), 8):
-            # No trump
-            valid_bids.append(Bid(number))
-            # Suits
+        for number in range(max(1, current_highest), 8):
             for suit in Suit:
                 if number > current_highest or (
-                    number == current_highest and self.highest_bid.suit < suit
+                    number == current_highest and (
+                        not self.highest_bid.suit or Compare_Suits(self.highest_bid.suit, suit)
+                    )
                 ):
                     valid_bids.append(Bid(number, suit))
 
