@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from .card import Card, Suit
+from .card import Card, Suit, Rank
 from .bid import Bid
 
 
@@ -11,6 +11,24 @@ class Player(ABC):
         self.name = name
         self.hand: List[Card] = []
         self.tricks_won = 0
+    
+    def get_hcp(self):
+        HIGH_CARD_POINTS = {
+        Rank.ACE: 4,
+        Rank.KING: 3,
+        Rank.QUEEN: 2,
+        Rank.JACK: 1,
+        }
+
+        return sum(
+            HIGH_CARD_POINTS[card.rank]
+            for card in self.hand
+            if card.rank in self.HIGH_CARD_POINTS
+        )
+
+    def get_suit_distribution(self):
+        return {s: len(list(filter(lambda card : card.suit == s, self.cards)))
+                 for s in Suit if s != Suit.NO_TRUMP}
 
     def receive_cards(self, cards: List[Card]):
         """Add cards to the player's hand."""
