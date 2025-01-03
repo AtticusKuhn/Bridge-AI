@@ -17,6 +17,7 @@ class Bidding:
         self.passes = 0
         self.highest_bid = Bid(0)  # Pass bid
         self.highest_bidder: Optional[Player] = None
+        self.current_proposer = -1
 
     def get_valid_bids(self) -> List[Bid]:
         """
@@ -59,6 +60,13 @@ class Bidding:
 
         # Update highest bid if not a pass
         if not bid.is_pass and bid > self.highest_bid:
+            # rule to determine proposer/dummy
+            if self.current_proposer == -1 or (
+                bid.suit != self.highest_bid.suit) or (
+                (self.current_proposer + current_player) % 2 != 0
+                ):
+                self.current_proposer = current_player
+            
             self.highest_bid = bid
             self.highest_bidder = current_player
             self.passes = 0
@@ -80,7 +88,7 @@ class Bidding:
         """
         if self.highest_bid.is_pass:
             return None, None
-        return self.highest_bidder, self.highest_bid
+        return self.current_proposer, self.highest_bid
 
     def __str__(self):
         result = "Bidding Status:\n"
