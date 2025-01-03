@@ -1,0 +1,1 @@
+# Bridge game simulator package
