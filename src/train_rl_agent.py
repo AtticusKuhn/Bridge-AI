@@ -130,7 +130,7 @@ class BridgeTrainer:
             [self.rl_agent._encode_hand(), torch.zeros(self.INITIAL_BID_ENCODING_SIZE)]
         )
 
-        action = game.contract.number * 5 + game.contract.suit.index
+        action = (game.contract.number - 1) * 5 + game.contract.suit.index
         self.rl_agent.update_q_network(
             initial_state, action, bid_reward, final_state, True, is_bidding=True
         )
