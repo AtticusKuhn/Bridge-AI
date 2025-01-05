@@ -1,6 +1,8 @@
-{ pkgs ? import <nixpkgs-unstable> {} }:
+{ pkgs ? import <nixpkgs> {} }:
 with pkgs;let
   my-python-packages = ps: with ps; [
+    pytorch
+    matplotlib
     numpy
   ];
   my-python = pkgs.python3.withPackages my-python-packages;

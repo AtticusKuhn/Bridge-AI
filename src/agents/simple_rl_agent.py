@@ -1,8 +1,8 @@
-import random
 from typing import List, Optional
 from src.models.player import Player
 from src.models.card import Card, Suit
 from src.models.bid import Bid
+
 
 # todo
 class SimpleRlAgent(Player):

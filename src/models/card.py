@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Dict, Final
 
 
 class Suit(Enum):
@@ -8,8 +9,13 @@ class Suit(Enum):
     SPADES = "♠"
     NO_TRUMP = "NT"
 
+    @property
+    def index(self):
+        return SUIT_INDEX[self]
 
-SUIT_RANK = {
+
+# Maps suits to their index values for encoding/comparison
+SUIT_INDEX: Final[Dict[Suit, int]] = {
     Suit.CLUBS: 0,
     Suit.DIAMONDS: 1,
     Suit.HEARTS: 2,
@@ -20,7 +26,7 @@ SUIT_RANK = {
 
 # Compares two suits
 def Compare_Suits(a: Suit, b: Suit):
-    return SUIT_RANK[a] < SUIT_RANK[b]
+    return SUIT_INDEX[a] < SUIT_INDEX[b]
 
 
 class Rank(Enum):
@@ -37,6 +43,33 @@ class Rank(Enum):
     QUEEN = "Q"
     KING = "K"
     ACE = "A"
+
+    @property
+    def index(self):
+        return RANK_INDEX[self]
+
+
+# Maps ranks to their index values for encoding
+RANK_INDEX: Final[Dict[Rank, int]] = {
+    rank: idx
+    for idx, rank in enumerate(
+        [
+            Rank.TWO,
+            Rank.THREE,
+            Rank.FOUR,
+            Rank.FIVE,
+            Rank.SIX,
+            Rank.SEVEN,
+            Rank.EIGHT,
+            Rank.NINE,
+            Rank.TEN,
+            Rank.JACK,
+            Rank.QUEEN,
+            Rank.KING,
+            Rank.ACE,
+        ]
+    )
+}
 
 
 class Card:

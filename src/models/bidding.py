@@ -13,7 +13,7 @@ class Bidding:
         self.passes = 0
         self.highest_bid = Bid(0)  # Pass bid
         self.highest_bidder: Optional[Player] = None
-        self.current_declarer = -1
+        self.current_declarer: int = -1
 
     def get_valid_bids(self) -> List[Bid]:
         """
@@ -54,6 +54,8 @@ class Bidding:
         """
         current_player = self.players[self.current_player_index]
         self.bids[current_player] = bid
+        print(f"self.current_declarer: {self.current_declarer}")
+        print(f"current_player: {current_player}")
 
         # Update highest bid if not a pass
         if not bid.is_pass and bid > self.highest_bid:
@@ -61,9 +63,9 @@ class Bidding:
             if (
                 self.current_declarer == -1
                 or (bid.suit != self.highest_bid.suit)
-                or ((self.current_declarer + current_player) % 2 != 0)
+                or ((self.current_declarer + self.current_player_index) % 2 != 0)
             ):
-                self.current_declarer = current_player
+                self.current_declarer = self.current_player_index
 
             self.highest_bid = bid
             self.highest_bidder = current_player
@@ -86,7 +88,7 @@ class Bidding:
         """
         if self.highest_bid.is_pass:
             return None, None
-        return self.current_declarer, self.highest_bid
+        return self.players[self.current_declarer], self.highest_bid
 
     def __str__(self):
         result = "Bidding Status:\n"
