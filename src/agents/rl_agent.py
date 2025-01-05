@@ -135,7 +135,7 @@ class RLAgent(Player):
         encoding = torch.zeros(self.bid_state_size, dtype=torch.float32)
         for bid in valid_bids:
             if not bid.is_pass:
-                idx = bid.number + SUIT_INDEX[bid.suit]
+                idx = 5 * (bid.number - 1) + bid.suit.index
                 encoding[idx] = 1.0
         return encoding
 
