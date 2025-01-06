@@ -3,6 +3,8 @@
 *.log
 tmp/
 
+.venv/
+.vscode/
 *.py[cod]
 *.egg
 build
