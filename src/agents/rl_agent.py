@@ -60,7 +60,8 @@ class RLAgent(Player):
     """Reinforcement Learning agent that learns to play bridge through Q-learning."""
 
     def __init__(
-        self, name: str, learning_rate: float = 0.001, epsilon: float = 0.1
+        self, name: str, learning_rate: float = 0.001, epsilon: float = 0.1,
+        epsilon_decay_factor = 0.999
     ) -> None:
         """Initialize the RL agent.
 
@@ -71,6 +72,7 @@ class RLAgent(Player):
         """
         super().__init__(name)
         self.epsilon = epsilon
+        self.epsilon_decay_factor = epsilon_decay_factor
 
         # State dimensions
         self.card_state_size: Final[int] = 52  # One-hot encoding of cards
@@ -238,6 +240,7 @@ class RLAgent(Player):
             done: Whether episode is done
             is_bidding: Whether updating bid network or play network
         """
+        self.epsilon *= self.epsilon_decay_factor
         network = self.bid_q_network if is_bidding else self.play_q_network
         optimizer = self.bid_optimizer if is_bidding else self.play_optimizer
 
