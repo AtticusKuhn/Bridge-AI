@@ -1,7 +1,7 @@
 from typing import List, Optional
-from src.models.player import Player
-from src.models.card import Card, Suit
-from src.models.bid import Bid
+from models.player import Player
+from models.card import Card, Suit
+from models.bid import Bid
 import random
 
 
