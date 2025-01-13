@@ -19,7 +19,7 @@ with pkgs;let
           src = pkgs.fetchPypi {
             pname = "setuptools";
             version = "70.3.0";
-            sha256 = "sha256-YlBwVxhzwJyf8h/a/kK3Oj2P2wXvwJqP1lB+sF3xkDY=";
+            sha256 = "sha256-8XG6sd+8hrEymX8moRn2BWpXlQ0FhYeEGgCC6IMPncU=";
           };
         }))
         pkgs.python3Packages.wheel
