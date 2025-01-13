@@ -4,14 +4,7 @@
   fetchPypi,
 
   # build dependencies
-  setuptools_70_3_0 ? setuptools.overrideAttrs (old: {
-    version = "70.3.0";
-    src = fetchPypi {
-      pname = "setuptools";
-      version = "70.3.0";
-      hash = "sha256-Hy7d5EFmGrR/QMWP0nSHXh0mXHGdmHPFYXvXA5O788=";
-    };
-  }),
+  setuptools,
   cmake,
   poetry-core,
   # dependencies
@@ -26,6 +19,16 @@
   pytest,
 }:
 
+let
+  old_setuptools = setuptools.overrideAttrs (old: {
+    version = "70.3.0";
+    src = fetchPypi {
+      pname = "setuptools";
+      version = "70.3.0";
+      hash = "sha256-8XG6sd+8hrEymX8moRn2BWpXlQ0FhYeEGgCC6IMPncU=";
+    };
+  });
+    in
 buildPythonPackage rec {
   pname = "endplay";
   version = "0.5.11";
@@ -41,7 +44,7 @@ buildPythonPackage rec {
   nativeBuildInputs = [ 
     cmake
     poetry-core
-    setuptools_70_3_0
+    old_setuptools
   ];
 
   buildInputs = [
