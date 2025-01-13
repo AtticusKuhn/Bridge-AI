@@ -60,8 +60,11 @@ class RLAgent(Player):
     """Reinforcement Learning agent that learns to play bridge through Q-learning."""
 
     def __init__(
-        self, name: str, learning_rate: float = 0.001, epsilon: float = 0.1,
-        epsilon_decay_factor = 0.999
+        self,
+        name: str,
+        learning_rate: float = 0.001,
+        epsilon: float = 0.1,
+        epsilon_decay_factor=0.999,
     ) -> None:
         """Initialize the RL agent.
 

@@ -9,7 +9,8 @@ from models.game import Game
 from agents.rl_agent import RLAgent
 from agents.random_agent import RandomAgent
 from agents.pass_agent import PassAgent
-from models.card import Suit, Compare_Suits
+from models.card import Suit
+
 
 @dataclass
 class TrainingMetrics:
@@ -17,13 +18,25 @@ class TrainingMetrics:
 
     scores: List[float] = field(default_factory=list)
     tricks: List[int] = field(default_factory=list)
-    contracts_declared: List[bool] = field(default_factory=list)  # True when agent is declarer
-    contract_levels: List[int] = field(default_factory=list)  # Bid level when agent is declarer
-    contracts_made: List[bool] = field(default_factory=list)  # Success when agent is declarer
+    contracts_declared: List[bool] = field(
+        default_factory=list
+    )  # True when agent is declarer
+    contract_levels: List[int] = field(
+        default_factory=list
+    )  # Bid level when agent is declarer
+    contracts_made: List[bool] = field(
+        default_factory=list
+    )  # Success when agent is declarer
     epsilon_decay_factor: float = 0.99
 
-    def update(self, score: float, tricks: int, is_declarer: bool = False, 
-               contract_level: Optional[int] = None, made_contract: Optional[bool] = None) -> None:
+    def update(
+        self,
+        score: float,
+        tricks: int,
+        is_declarer: bool = False,
+        contract_level: Optional[int] = None,
+        made_contract: Optional[bool] = None,
+    ) -> None:
         """Update metrics with new values."""
         self.scores.append(score)
         self.tricks.append(tricks)
@@ -32,27 +45,48 @@ class TrainingMetrics:
             self.contract_levels.append(contract_level)
             self.contracts_made.append(made_contract)
 
-    def get_recent_averages(self, window: int = 100) -> tuple[float, float, float, float, float]:
+    def get_recent_averages(
+        self, window: int = 100
+    ) -> tuple[float, float, float, float, float]:
         """Calculate average metrics over recent episodes."""
         recent_scores = self.scores[-window:]
         recent_tricks = self.tricks[-window:]
         recent_declarations = self.contracts_declared[-window:]
-        
+
         # Calculate declaration rate
         declaration_rate = sum(recent_declarations) / len(recent_declarations)
-        
+
         # Calculate contract success rate and average level
         if any(recent_declarations):
-            recent_successes = [made for made, is_decl in zip(self.contracts_made[-window:], recent_declarations) if is_decl]
-            recent_levels = [level for level, is_decl in zip(self.contract_levels[-window:], recent_declarations) if is_decl]
-            success_rate = sum(recent_successes) / len(recent_successes) if recent_successes else 0
+            recent_successes = [
+                made
+                for made, is_decl in zip(
+                    self.contracts_made[-window:], recent_declarations
+                )
+                if is_decl
+            ]
+            recent_levels = [
+                level
+                for level, is_decl in zip(
+                    self.contract_levels[-window:], recent_declarations
+                )
+                if is_decl
+            ]
+            success_rate = (
+                sum(recent_successes) / len(recent_successes) if recent_successes else 0
+            )
             avg_level = sum(recent_levels) / len(recent_levels) if recent_levels else 0
         else:
             success_rate = 0
             avg_level = 0
-            
-        return (np.mean(recent_scores), np.mean(recent_tricks), 
-                declaration_rate, success_rate, avg_level)
+
+        return (
+            np.mean(recent_scores),
+            np.mean(recent_tricks),
+            declaration_rate,
+            success_rate,
+            avg_level,
+        )
 
 
 class BridgeTrainer:
@@ -80,7 +114,9 @@ class BridgeTrainer:
         ]
         self.metrics = TrainingMetrics()
 
-    def _get_reward_for_bid(self, contract_level: int, made_contract: bool, contract_suit: Suit) -> float:
+    def _get_reward_for_bid(
+        self, contract_level: int, made_contract: bool, contract_suit: Suit
+    ) -> float:
         """Calculate reward for bidding phase.
 
         Args:
@@ -90,16 +126,16 @@ class BridgeTrainer:
         Returns:
             float: Calculated reward value.
         """
-        game = (contract_level >= 3) if contract_suit.is_no_trump else (contract_level >= 4)
+        game = (
+            (contract_level >= 3)
+            if contract_suit.is_no_trump
+            else (contract_level >= 4)
+        )
         slam = contract_level >= 6
         made_mult = 80 if slam else 30 if game else contract_level * 1.2
         fail_mult = 20 if slam else 10 if game else contract_level
 
-        multiplier = (
-            made_mult
-            if made_contract
-            else -fail_mult
-        )
+        multiplier = made_mult if made_contract else -fail_mult
 
         return multiplier
 
@@ -164,19 +200,28 @@ class BridgeTrainer:
             made_contract = declarer_team_tricks >= tricks_needed
             contract_level = game.contract.number
             contract_suit = game.contract.suit
-            
-            bid_reward = self._get_reward_for_bid(contract_level, made_contract, contract_suit)
+
+            bid_reward = self._get_reward_for_bid(
+                contract_level, made_contract, contract_suit
+            )
 
             final_state = torch.cat(
-                [self.rl_agent._encode_hand(), torch.zeros(self.INITIAL_BID_ENCODING_SIZE)]
+                [
+                    self.rl_agent._encode_hand(),
+                    torch.zeros(self.INITIAL_BID_ENCODING_SIZE),
+                ]
             )
 
             action = (contract_level - 1) * 5 + game.contract.suit.index
             self.rl_agent.update_q_network(
-                initial_state, action, bid_reward * self.metrics.epsilon_decay_factor,
-                  final_state, True, is_bidding=True
+                initial_state,
+                action,
+                bid_reward * self.metrics.epsilon_decay_factor,
+                final_state,
+                True,
+                is_bidding=True,
             )
-        
+
         # else:
         #     final_state = torch.cat(
         #         [self.rl_agent._encode_hand(), torch.zeros(self.INITIAL_BID_ENCODING_SIZE)]
@@ -202,16 +247,18 @@ class BridgeTrainer:
 
             # Update metrics
             self.metrics.update(
-                game.score[self.rl_agent], 
+                game.score[self.rl_agent],
                 self.rl_agent.tricks_won,
                 is_declarer,
                 contract_level,
-                made_contract
+                made_contract,
             )
 
             # Print progress
             if (episode + 1) % self.PROGRESS_UPDATE_FREQUENCY == 0:
-                avg_score, avg_tricks, decl_rate, success_rate, avg_level = self.metrics.get_recent_averages()
+                avg_score, avg_tricks, decl_rate, success_rate, avg_level = (
+                    self.metrics.get_recent_averages()
+                )
                 print(f"Episode {episode + 1}")
                 print(f"Average Score (last 100): {avg_score:.2f}")
                 print(f"Average Tricks (last 100): {avg_tricks:.2f}")
@@ -226,16 +273,22 @@ class BridgeTrainer:
         window = 100  # Window size for rolling average
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(20, 16))
         episodes = range(len(self.metrics.scores))
-        
+
         # Helper function for rolling average
         def rolling_average(data, window_size):
-            return np.convolve(data, np.ones(window_size)/window_size, mode='valid')
-        
+            return np.convolve(data, np.ones(window_size) / window_size, mode="valid")
+
         # Plot scores
         raw_scores = np.array(self.metrics.scores)
         rolling_scores = rolling_average(raw_scores, window)
-        ax1.plot(episodes, raw_scores, alpha=0.3, label='Raw Scores', color='blue')
-        ax1.plot(episodes[window-1:], rolling_scores, label=f'{window}-Episode Average', color='blue', linewidth=2)
+        ax1.plot(episodes, raw_scores, alpha=0.3, label="Raw Scores", color="blue")
+        ax1.plot(
+            episodes[window - 1 :],
+            rolling_scores,
+            label=f"{window}-Episode Average",
+            color="blue",
+            linewidth=2,
+        )
         ax1.set_title("Training Scores")
         ax1.set_xlabel("Episode")
         ax1.set_ylabel("Score")
@@ -245,8 +298,14 @@ class BridgeTrainer:
         # Plot tricks
         raw_tricks = np.array(self.metrics.tricks)
         rolling_tricks = rolling_average(raw_tricks, window)
-        ax2.plot(episodes, raw_tricks, alpha=0.3, label='Raw Tricks', color='green')
-        ax2.plot(episodes[window-1:], rolling_tricks, label=f'{window}-Episode Average', color='green', linewidth=2)
+        ax2.plot(episodes, raw_tricks, alpha=0.3, label="Raw Tricks", color="green")
+        ax2.plot(
+            episodes[window - 1 :],
+            rolling_tricks,
+            label=f"{window}-Episode Average",
+            color="green",
+            linewidth=2,
+        )
         ax2.set_title("Tricks Won")
         ax2.set_xlabel("Episode")
         ax2.set_ylabel("Number of Tricks")
@@ -254,17 +313,33 @@ class BridgeTrainer:
         ax2.legend()
 
         # Plot declaration rate and contract success rate
-        decl_episodes = [i for i, is_decl in enumerate(self.metrics.contracts_declared) if is_decl]
+        decl_episodes = [
+            i for i, is_decl in enumerate(self.metrics.contracts_declared) if is_decl
+        ]
         if decl_episodes:  # Only plot if there are declarations
             success_data = [1 if made else 0 for made in self.metrics.contracts_made]
-            rolling_success = rolling_average(success_data, min(window, len(success_data)))
-            ax3.plot(decl_episodes[window-1:], rolling_success, label='Success Rate', color='purple', linewidth=2)
-            
+            rolling_success = rolling_average(
+                success_data, min(window, len(success_data))
+            )
+            ax3.plot(
+                decl_episodes[window - 1 :],
+                rolling_success,
+                label="Success Rate",
+                color="purple",
+                linewidth=2,
+            )
+
             # Plot average contract level when declaring
             level_data = self.metrics.contract_levels
             rolling_levels = rolling_average(level_data, min(window, len(level_data)))
-            ax3.plot(decl_episodes[window-1:], rolling_levels, label='Avg Contract Level', color='orange', linewidth=2)
-            
+            ax3.plot(
+                decl_episodes[window - 1 :],
+                rolling_levels,
+                label="Avg Contract Level",
+                color="orange",
+                linewidth=2,
+            )
+
         ax3.set_title("Contract Performance (When Declaring)")
         ax3.set_xlabel("Episode")
         ax3.set_ylabel("Rate / Level")
@@ -274,7 +349,13 @@ class BridgeTrainer:
         # Plot declaration rate
         decl_data = [1 if decl else 0 for decl in self.metrics.contracts_declared]
         rolling_decl = rolling_average(decl_data, window)
-        ax4.plot(episodes[window-1:], rolling_decl, label='Declaration Rate', color='red', linewidth=2)
+        ax4.plot(
+            episodes[window - 1 :],
+            rolling_decl,
+            label="Declaration Rate",
+            color="red",
+            linewidth=2,
+        )
         ax4.set_title("Declaration Rate")
         ax4.set_xlabel("Episode")
         ax4.set_ylabel("Rate")
@@ -282,7 +363,7 @@ class BridgeTrainer:
         ax4.legend()
 
         plt.tight_layout()
-        plt.savefig("training_results.png", bbox_inches='tight')
+        plt.savefig("training_results.png", bbox_inches="tight")
         plt.close()
 
 
