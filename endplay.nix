@@ -32,9 +32,12 @@ buildPythonPackage rec {
   };
 
   nativeBuildInputs = [ 
-    setuptools
     cmake
     poetry-core
+  ];
+
+  buildInputs = [
+    setuptools
   ];
 
   propagatedBuildInputs = [
