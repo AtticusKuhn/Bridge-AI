@@ -14,7 +14,14 @@ with pkgs;let
       doCheck = false;
       nativeBuildInputs = [
         pkgs.cmake
-        pkgs.python3Packages.setuptools
+        (pkgs.python3Packages.setuptools.overridePythonAttrs (old: {
+          version = "70.3.0";
+          src = pkgs.fetchPypi {
+            pname = "setuptools";
+            version = "70.3.0";
+            sha256 = "sha256-YlBwVxhzwJyf8h/a/kK3Oj2P2wXvwJqP1lB+sF3xkDY=";
+          };
+        }))
         pkgs.python3Packages.wheel
         pkgs.python3Packages.pip
         pkgs.python3Packages.scikit-build
