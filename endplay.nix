@@ -51,10 +51,8 @@ buildPythonPackage rec {
   nativeCheckInputs = [ pytestCheckHook pytest ];
  checkPhase = ''
     runHook preCheck
-
     pytest
     python3 -m pytest
-
 
     runHook postCheck
   '';
