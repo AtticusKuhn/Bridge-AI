@@ -22,5 +22,6 @@ mkShell {
     my-python
     pkgs.black
     pkgs.ruff
+    pkgs.cmake
   ];
 }
