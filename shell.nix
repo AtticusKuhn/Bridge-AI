@@ -13,6 +13,7 @@ with pkgs;let
       };
       doCheck = false;
       nativeBuildInputs = [pkgs.cmake];
+      buildInputs = [pkgs.python3Packages.setuptools];
       propagatedBuildInputs = [];
     })
   ];
