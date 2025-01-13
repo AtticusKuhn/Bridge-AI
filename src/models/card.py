@@ -12,6 +12,10 @@ class Suit(Enum):
     @property
     def index(self):
         return SUIT_INDEX[self]
+    
+    @property
+    def is_no_trump(self):
+        return SUIT_INDEX[self] == 4
 
 
 # Maps suits to their index values for encoding/comparison

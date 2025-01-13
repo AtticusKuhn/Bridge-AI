@@ -9,6 +9,7 @@ from models.game import Game
 from agents.rl_agent import RLAgent
 from agents.random_agent import RandomAgent
 from agents.pass_agent import PassAgent
+from models.card import Suit, Compare_Suits
 
 @dataclass
 class TrainingMetrics:
@@ -19,7 +20,8 @@ class TrainingMetrics:
     contracts_declared: List[bool] = field(default_factory=list)  # True when agent is declarer
     contract_levels: List[int] = field(default_factory=list)  # Bid level when agent is declarer
     contracts_made: List[bool] = field(default_factory=list)  # Success when agent is declarer
-    
+    epsilon_decay_factor: float = 0.99
+
     def update(self, score: float, tricks: int, is_declarer: bool = False, 
                contract_level: Optional[int] = None, made_contract: Optional[bool] = None) -> None:
         """Update metrics with new values."""
@@ -58,7 +60,7 @@ class BridgeTrainer:
 
     # Class constants
     MADE_CONTRACT_MULTIPLIER = 10.0
-    FAILED_CONTRACT_MULTIPLIER = -5.0
+    FAILED_CONTRACT_MULTIPLIER = -3.0
     DECLARER_TRICK_REWARD = 1.0
     DEFENDER_TRICK_REWARD = 0.5
     INITIAL_BID_ENCODING_SIZE = 35
@@ -78,7 +80,7 @@ class BridgeTrainer:
         ]
         self.metrics = TrainingMetrics()
 
-    def _get_reward_for_bid(self, contract_level: int, made_contract: bool) -> float:
+    def _get_reward_for_bid(self, contract_level: int, made_contract: bool, contract_suit: Suit) -> float:
         """Calculate reward for bidding phase.
 
         Args:
@@ -88,12 +90,18 @@ class BridgeTrainer:
         Returns:
             float: Calculated reward value.
         """
+        game = (contract_level >= 3) if contract_suit.is_no_trump else (contract_level >= 4)
+        slam = contract_level >= 6
+        made_mult = 80 if slam else 30 if game else contract_level * 1.2
+        fail_mult = 20 if slam else 10 if game else contract_level
+
         multiplier = (
-            self.MADE_CONTRACT_MULTIPLIER
+            made_mult
             if made_contract
-            else self.FAILED_CONTRACT_MULTIPLIER
+            else -fail_mult
         )
-        return contract_level * multiplier
+
+        return multiplier
 
     def _get_reward_for_trick(self, won_trick: bool, is_declarer: bool) -> float:
         """Calculate reward for each trick.
@@ -145,6 +153,7 @@ class BridgeTrainer:
         is_declarer = bool(game.contract and game.declarer == self.rl_agent)
         contract_level = None
         made_contract = None
+        self.metrics.epsilon_decay_factor *= 0.9999
 
         if is_declarer:
             partner_index = (players.index(self.rl_agent) + 2) % self.NUM_PLAYERS
@@ -154,8 +163,9 @@ class BridgeTrainer:
             tricks_needed = 6 + game.contract.number
             made_contract = declarer_team_tricks >= tricks_needed
             contract_level = game.contract.number
-
-            bid_reward = self._get_reward_for_bid(contract_level, made_contract)
+            contract_suit = game.contract.suit
+            
+            bid_reward = self._get_reward_for_bid(contract_level, made_contract, contract_suit)
 
             final_state = torch.cat(
                 [self.rl_agent._encode_hand(), torch.zeros(self.INITIAL_BID_ENCODING_SIZE)]
@@ -163,8 +173,18 @@ class BridgeTrainer:
 
             action = (contract_level - 1) * 5 + game.contract.suit.index
             self.rl_agent.update_q_network(
-                initial_state, action, bid_reward, final_state, True, is_bidding=True
+                initial_state, action, bid_reward * self.metrics.epsilon_decay_factor,
+                  final_state, True, is_bidding=True
             )
+        
+        # else:
+        #     final_state = torch.cat(
+        #         [self.rl_agent._encode_hand(), torch.zeros(self.INITIAL_BID_ENCODING_SIZE)]
+        #     )
+        #     self.rl_agent.update_q_network(
+        #         initial_state, 0, 0,
+        #           final_state, True, is_bidding=True
+        #     )
 
         return is_declarer, contract_level, made_contract
 
@@ -268,7 +288,7 @@ class BridgeTrainer:
 
 def main() -> None:
     """Main entry point for training."""
-    trainer = BridgeTrainer(num_episodes=10_000)
+    trainer = BridgeTrainer(num_episodes=1_000)
     trainer.train()
 
 

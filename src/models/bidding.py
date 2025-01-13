@@ -54,8 +54,8 @@ class Bidding:
         """
         current_player = self.players[self.current_player_index]
         self.bids[current_player] = bid
-        print(f"self.current_declarer: {self.current_declarer}")
-        print(f"current_player: {current_player}")
+        # print(f"self.current_declarer: {self.current_declarer}")
+        # print(f"current_player: {current_player}")
 
         # Update highest bid if not a pass
         if not bid.is_pass and bid > self.highest_bid:
