@@ -1,31 +1,34 @@
-{ pkgs ? import <nixpkgs> {} }:
-with pkgs;let
-  my-python-packages = ps: with ps; [
-    pytorch
-    matplotlib
-    numpy
-    (buildPythonPackage rec {
-      pname = "endplay";
-      version = "0.5.11";
-      src = fetchPypi {
-        inherit pname version;
-        sha256 = "sha256-2aCQD1Kz7olpbUODZNBvZxtBg8YIK3VjNXisuY9za+Y=";
-      };
-      doCheck = false;
-      nativeBuildInputs = with pkgs.python3Packages; [
-        pkgs.cmake
-        setuptools
-        wheel
-        pip
-        scikit-build
-        poetry-core
-      ];
-      buildInputs = [];
-      propagatedBuildInputs = [];
-      dontUseCmakeConfigure = true;
-      format = "pyproject";
-    })
-  ];
+{
+  pkgs ? import <nixpkgs> { },
+}:
+with pkgs;
+let
+  endplay = python312.pkgs.buildPythonPackage rec {
+    pname = "endplay";
+    version = "0.5.11";
+    pyproject = true;
+
+    src = fetchPypi {
+      inherit pname version;
+      hash = "sha256-2aCQD1Kz7olpbUODZNBvZxtBg8YIK3VjNXisuY9za+Y=";
+    };
+
+    build-system = [ python312.pkgs.setuptools ];
+    # has no tests
+    doCheck = false;
+
+    meta = {
+      homepage = "https://github.com/dominicprice/endplay";
+      description = "A Python library providing a variety of different tools for generating, analysing, solving and scoring bridge deals.";
+    };
+  };
+  my-python-packages =
+    ps: with ps; [
+      pytorch
+      matplotlib
+      numpy
+      endplay
+    ];
   my-python = pkgs.python3.withPackages my-python-packages;
 in
 mkShell {
@@ -34,5 +37,6 @@ mkShell {
     pkgs.black
     pkgs.ruff
     pkgs.cmake
+    pkgs.nixfmt-rfc-style
   ];
 }
