@@ -6,7 +6,7 @@
   # build dependencies
   setuptools,
   cmake,
-
+  poetry-core,
   # dependencies
   pyparsing,
   tqdm,
@@ -16,6 +16,7 @@
 
   # tests
   pytestCheckHook,
+  pytest,
 }:
 
 buildPythonPackage rec {
@@ -23,6 +24,7 @@ buildPythonPackage rec {
   version = "0.5.11";
   pyproject = true;
   doCheck = true;
+  dontUseCmakeConfigure = true;
 
   src = fetchPypi {
     inherit pname version;
@@ -31,7 +33,8 @@ buildPythonPackage rec {
 
   nativeBuildInputs = [ 
     setuptools
-    cmake 
+    cmake
+    poetry-core
   ];
 
   propagatedBuildInputs = [
@@ -42,8 +45,16 @@ buildPythonPackage rec {
     more-itertools
   ];
 
-  nativeCheckInputs = [ pytestCheckHook ];
+  nativeCheckInputs = [ pytestCheckHook pytest ];
+ checkPhase = ''
+    runHook preCheck
 
+    pytest
+    python3 -m pytest
+
+
+    runHook postCheck
+  '';
   meta = {
     homepage = "https://github.com/dominicprice/endplay";
     description = "A Python library providing a variety of different tools for generating, analysing, solving and scoring bridge deals.";
