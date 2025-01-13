@@ -29,9 +29,12 @@ buildPythonPackage rec {
     hash = "sha256-2aCQD1Kz7olpbUODZNBvZxtBg8YIK3VjNXisuY9za+Y=";
   };
 
-  build-system = [ setuptools ];
+  nativeBuildInputs = [ 
+    setuptools
+    cmake 
+  ];
 
-  dependencies = [
+  propagatedBuildInputs = [
     pyparsing
     tqdm
     numpy
@@ -39,18 +42,12 @@ buildPythonPackage rec {
     more-itertools
   ];
 
-  buildInpts = [ cmake ];
-
   nativeCheckInputs = [ pytestCheckHook ];
 
   meta = {
     homepage = "https://github.com/dominicprice/endplay";
     description = "A Python library providing a variety of different tools for generating, analysing, solving and scoring bridge deals.";
-    # description = "Data description language";
     license = lib.licenses.mit;
-    # };
-    # meta = {
-    changelog = "https://github.com/blaze/datashape/releases/tag/${version}";
-    # homepage = "https://github.com/ContinuumIO/datashape";
+    changelog = "https://github.com/dominicprice/endplay/releases/tag/v${version}";
   };
 }
