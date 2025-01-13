@@ -18,6 +18,7 @@ with pkgs;let
         pkgs.python3Packages.wheel
         pkgs.python3Packages.pip
         pkgs.python3Packages.scikit-build
+        pkgs.python3Packages.poetry-core
       ];
       buildInputs = [];
       propagatedBuildInputs = [];
