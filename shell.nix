@@ -11,7 +11,7 @@ with pkgs;let
         inherit pname version;
         sha256 = "sha256-2aCQD1Kz7olpbUODZNBvZxtBg8YIK3VjNXisuY9za+Y=";
       };
-      doCheck = false;
+      # doCheck = false;
       nativeBuildInputs = [
         pkgs.cmake
         pkgs.python3Packages.setuptools
@@ -21,6 +21,11 @@ with pkgs;let
       buildInputs = [];
       propagatedBuildInputs = [];
       dontUseCmakeConfigure = true;
+      cmakeFlags = [
+        (lib.cmakeBool "MI_USE_SUBMODULES" false)
+        # (lib.cmakeBool "MI_ENABLE_EMBREE" enableEmbree)
+        # (lib.cmakeFeature "MI_DEFAULT_VARIANTS" (builtins.concatStringsSep ";" enableVariants))
+      ];
     })
   ];
   my-python = pkgs.python3.withPackages my-python-packages;
