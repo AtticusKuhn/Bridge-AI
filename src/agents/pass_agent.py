@@ -5,7 +5,7 @@ from src.models.bid import Bid
 import random
 
 
-class SimpleRlAgent(Player):
+class PassAgent(Player):
     def make_bid(self, valid_bids: List[Bid]) -> Bid:
         return Bid(0)
 

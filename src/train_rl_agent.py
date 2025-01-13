@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from models.game import Game
 from agents.rl_agent import RLAgent
 from agents.random_agent import RandomAgent
-
+from agents.pass_agent import PassAgent
 
 @dataclass
 class TrainingMetrics:
@@ -74,7 +74,7 @@ class BridgeTrainer:
         self.num_episodes = num_episodes
         self.rl_agent = RLAgent("RL Player")
         self.opponents = [
-            RandomAgent(f"Random {i+1}") for i in range(self.NUM_PLAYERS - 1)
+            PassAgent(f"Random {i+1}") for i in range(self.NUM_PLAYERS - 1)
         ]
         self.metrics = TrainingMetrics()
 
