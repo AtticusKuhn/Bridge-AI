@@ -20,15 +20,7 @@
 }:
 
 let
-  old_setuptools = setuptools.overrideAttrs (old: {
-    version = "70.3.0";
-    src = fetchPypi {
-      pname = "setuptools";
-      version = "70.3.0";
-      hash = "sha256-8XG6sd+8hrEymX8moRn2BWpXlQ0FhYeEGgCC6IMPncU=";
-    };
-  });
-    in
+in
 buildPythonPackage rec {
   pname = "endplay";
   version = "0.5.11";
@@ -44,7 +36,7 @@ buildPythonPackage rec {
   nativeBuildInputs = [ 
     cmake
     poetry-core
-    old_setuptools
+    setuptools
   ];
 
   buildInputs = [
