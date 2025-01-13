@@ -9,10 +9,10 @@ with pkgs;let
       version = "0.5.11";
       src = fetchPypi {
         inherit pname version;
-        sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; # Will be updated
+        sha256 = "sha256-2aCQD1Kz7olpbUODZNBvZxtBg8YIK3VjNXisuY9za+Y=";
       };
       doCheck = false;
-      propagatedBuildInputs = [];
+      propagatedBuildInputs = [pkgs.cmake];
     })
   ];
   my-python = pkgs.python3.withPackages my-python-packages;
