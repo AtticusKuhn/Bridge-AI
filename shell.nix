@@ -12,20 +12,13 @@ with pkgs;let
         sha256 = "sha256-2aCQD1Kz7olpbUODZNBvZxtBg8YIK3VjNXisuY9za+Y=";
       };
       doCheck = false;
-      nativeBuildInputs = [
+      nativeBuildInputs = with pkgs.python3Packages; [
         pkgs.cmake
-        (pkgs.python3Packages.setuptools.overridePythonAttrs (old: {
-          version = "70.3.0";
-          src = pkgs.fetchPypi {
-            pname = "setuptools";
-            version = "70.3.0";
-            sha256 = "sha256-8XG6sd+8hrEymX8moRn2BWpXlQ0FhYeEGgCC6IMPncU=";
-          };
-        }))
-        pkgs.python3Packages.wheel
-        pkgs.python3Packages.pip
-        pkgs.python3Packages.scikit-build
-        pkgs.python3Packages.poetry-core
+        setuptools
+        wheel
+        pip
+        scikit-build
+        poetry-core
       ];
       buildInputs = [];
       propagatedBuildInputs = [];
