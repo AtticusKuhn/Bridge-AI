@@ -4,7 +4,14 @@
   fetchPypi,
 
   # build dependencies
-  setuptools,
+  setuptools_70_3_0 ? setuptools.overrideAttrs (old: {
+    version = "70.3.0";
+    src = fetchPypi {
+      pname = "setuptools";
+      version = "70.3.0";
+      hash = "sha256-Hy7d5EFmGrR/QMWP0nSHXh0mXHGdmHPFYXvXA5O788=";
+    };
+  }),
   cmake,
   poetry-core,
   # dependencies
@@ -34,7 +41,7 @@ buildPythonPackage rec {
   nativeBuildInputs = [ 
     cmake
     poetry-core
-    setuptools
+    setuptools_70_3_0
   ];
 
   buildInputs = [
