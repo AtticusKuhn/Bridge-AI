@@ -12,9 +12,15 @@ with pkgs;let
         sha256 = "sha256-2aCQD1Kz7olpbUODZNBvZxtBg8YIK3VjNXisuY9za+Y=";
       };
       doCheck = false;
-      nativeBuildInputs = [pkgs.cmake];
-      buildInputs = [pkgs.python3Packages.setuptools];
+      nativeBuildInputs = [
+        pkgs.cmake
+        pkgs.python3Packages.setuptools
+        pkgs.python3Packages.wheel
+        pkgs.python3Packages.pip
+      ];
+      buildInputs = [];
       propagatedBuildInputs = [];
+      dontUseCmakeConfigure = true;
     })
   ];
   my-python = pkgs.python3.withPackages my-python-packages;
